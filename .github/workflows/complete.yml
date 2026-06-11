@@ -1,0 +1,43 @@
+name: Record sync completion
+
+on:
+  repository_dispatch:
+    types: [notesync-complete]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: notesync-state
+  cancel-in-progress: false
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Advance watermark
+        run: npm run complete
+
+      - name: Commit state
+        run: |
+          git config user.name "notesync[bot]"
+          git config user.email "notesync@users.noreply.github.com"
+          git add state/
+          if git diff --cached --quiet; then
+            echo "No state change to commit."
+            exit 0
+          fi
+          git commit -m "chore: advance sync watermark to ${{ github.event.client_payload.until }}"
+          git pull --rebase origin main
+          git push origin main
