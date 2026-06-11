@@ -1,0 +1,23 @@
+{
+  "name": "notesync",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Syncs Teams meeting transcripts and Copilot AI insights into OneNote via Power Automate, orchestrated from GitHub Actions.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "trigger": "tsx src/trigger.ts",
+    "complete": "tsx src/complete.ts",
+    "build:script": "tsx scripts/build-office-script.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0",
+    "vitest": "^4.1.8"
+  }
+}
